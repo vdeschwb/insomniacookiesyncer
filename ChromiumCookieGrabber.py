@@ -41,7 +41,8 @@ class ChromiumCookieGrabber:
 
     def get_cookies(self):
         with sqlite3.connect(self.__cookies_filepath) as connection:
+            connection.text_factory = bytes
             result = connection.execute('select host_key, name, encrypted_value from cookies')  # add other fields if you want
             for host_key, name, encrypted_value in result:
                 value = self.__decrypt_value(encrypted_value)
-                yield (host_key, name, value)
+                yield (bytes.decode(host_key), bytes.decode(name), value)
